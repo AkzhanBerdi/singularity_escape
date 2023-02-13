@@ -27,7 +27,7 @@ button_img = pygame.image.load('restart.png')
 
 # screen settings
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
-pygame.display.set_caption("Dino Game")
+pygame.display.set_caption("Singularity Escape")
 
 #Font
 font = pygame.font.SysFont('Bauhaus 93',60)
@@ -49,8 +49,8 @@ def draw_text(text,font,text_col,x,y):
 
 def reset_game():
     meteorit_group.empty()
-    DINO.rect.x = 500
-    DINO.rect.y = 700
+    voyager.rect.x = 500
+    voyager.rect.y = 700
     score = 0
     return score
 
@@ -61,26 +61,17 @@ class Meteor(pygame.sprite.Sprite):
         self.image = pygame.image.load('meteorit.png')
         self.rect = self.image.get_rect()
         self.rect.center = [x,y]
-    """#position from all sides
-        if position == 1:
-            self.rect.bottomleft = [x,y]
-        if position == 2:
-            self.rect.bottom = [x,y]
-        if position == 3:
-            self.rect.bottom = [x,y]
-        if position == 4:
-            self.rect.bottom = [x,y]"""
     
     def update(self):
-        if self.rect.x > 350:
+        if self.rect.x > 330:
             self.rect.x -= GRAVITY_FORCE
-        if self.rect.x < 350:
+        if self.rect.x < 330:
             self.rect.x += GRAVITY_FORCE
-        if self.rect.y < 250:
+        if self.rect.y < 220:
             self.rect.y += GRAVITY_FORCE
-        if self.rect.y > 250:
+        if self.rect.y > 220:
             self.rect.y -= GRAVITY_FORCE
-        if self.rect.x == 350 and self.rect.y == 250:
+        if self.rect.x == 330 and self.rect.y == 220:
             self.kill()
         
 
@@ -89,7 +80,6 @@ class Hole(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('hole1.png')
         self.rect = self.image.get_rect()
-        #unneccessary?
         self.rect.center = [x, y]
         
 
@@ -97,7 +87,6 @@ class Sattelite(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('sattelite.png')
-        #self.index = 0
         self.rect = self.image.get_rect()
         self.rect.center = [x,y]
         self.x_axis = 600
@@ -120,13 +109,13 @@ class Button():
 
 #class objects
 black_hole = Hole(360,260)
-DINO = Sattelite(700,500)
+voyager = Sattelite(700,500)
 button = Button(WIDTH // 2 - 50, HEIGHT // 2 - 100, button_img)
 
 # object groups
 satel_group = pygame.sprite.Group()
 hole_group = pygame.sprite.Group()
-satel_group.add(DINO)
+satel_group.add(voyager)
 hole_group.add(black_hole)
 meteorit_group = pygame.sprite.Group()
 
@@ -136,8 +125,9 @@ while run:
     screen.blit(space_bg, (0,0))
     meteorit_group.draw(screen)
     satel_group.update()
-    screen.blit(hole_image,(270,170))
-    screen.blit(DINO.image,(DINO.x_axis,DINO.y_axis))
+    hole_group.draw(screen)
+    hole_group.update()
+    screen.blit(voyager.image,(voyager.x_axis,voyager.y_axis))
 
     #checking_score
     if len(meteorit_group) > 0:
@@ -149,16 +139,21 @@ while run:
             if satel_group.sprites()[0].rect.left != meteorit_group.sprites()[0].rect.right:
                 score += 1
                 evasion = False
-            if score in {1000,2000,3000,4000,5000,6000,7000,8000,9000}:
+            if score in {500,1000,1500,2000,2500,3000,3500,4000,4500,5000}:
                 sndPoint.play(0)
+
     draw_text(str(score),font,white,int(WIDTH/2),20)
 
     #collide_event
-    if pygame.sprite.spritecollide(DINO,meteorit_group,False,False):
+    if pygame.sprite.spritecollide(voyager,meteorit_group,False,False):
         game_over = True
         button.draw()
 
     if game_over == False:
+
+        if score == 1000:
+            black_hole.image = pygame.image.load('hole2.png')
+
         time_now = pygame.time.get_ticks()
 
         if time_now - last_meteor > meteor_frequency:
@@ -175,28 +170,25 @@ while run:
         meteorit_group.update()
 
         #keys = pygame.key.get_pressed()
-        if DINO.y_axis + DINO.height < 300:
-            DINO.y_axis += GRAVITY_FORCE
-        if DINO.x_axis + DINO.width > 400:
-            DINO.x_axis -= GRAVITY_FORCE
-        if DINO.y_axis + DINO.height > 300:
-            DINO.y_axis -= GRAVITY_FORCE
-        if DINO.x_axis + DINO.width < 400:
-            DINO.x_axis += GRAVITY_FORCE  
+        if voyager.y_axis + voyager.height < 280:
+            voyager.y_axis += GRAVITY_FORCE
+        if voyager.x_axis + voyager.width > 375:
+           voyager.x_axis -= GRAVITY_FORCE
+        if voyager.y_axis + voyager.height > 280:
+            voyager.y_axis -= GRAVITY_FORCE
+        if voyager.x_axis + voyager.width < 375:
+            voyager.x_axis += GRAVITY_FORCE  
 
         # Key_press actions
         key = pygame.key.get_pressed()
-        if key[pygame.K_RIGHT] and DINO.x_axis < 665:
-            DINO.x_axis += SPEED
-        if key[pygame.K_LEFT] and DINO.x_axis > 5:
-            DINO.x_axis -= SPEED
-        if key[pygame.K_UP] and DINO.y_axis > 15:
-            DINO.y_axis -= SPEED
-        if key[pygame.K_DOWN] and DINO.y_axis < 660:
-            DINO.y_axis += SPEED
-        if key[pygame.K_SPACE]:
-            DINO.y_axis += 45
-            DINO.y_axis -= 40
+        if key[pygame.K_RIGHT] and voyager.x_axis < 665:
+            voyager.x_axis += SPEED
+        if key[pygame.K_LEFT] and voyager.x_axis > 5:
+            voyager.x_axis -= SPEED
+        if key[pygame.K_UP] and voyager.y_axis > 15:
+            voyager.y_axis -= SPEED
+        if key[pygame.K_DOWN] and voyager.y_axis < 660:
+            voyager.y_axis += SPEED
 
     if game_over == True:
         if button.draw() == True:
