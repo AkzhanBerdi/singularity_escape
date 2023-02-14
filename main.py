@@ -21,7 +21,7 @@ sndPoint = pygame.mixer.Sound('point.mp3')
 sndPoint.set_volume(0.13)
 
 # image file path
-hole_image = pygame.image.load('hole1.png')
+#hole_image = pygame.image.load('hole1.png')
 space_bg = pygame.image.load('space.png')
 button_img = pygame.image.load('restart.png')
 
@@ -59,34 +59,66 @@ class Meteor(pygame.sprite.Sprite):
     def __init__(self,x,y,):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('meteorit.png')
+        #self.image.fill((255,0,0))
         self.rect = self.image.get_rect()
         self.rect.center = [x,y]
     
     def update(self):
-        if self.rect.x > 330:
-            self.rect.x -= GRAVITY_FORCE
-        if self.rect.x < 330:
-            self.rect.x += GRAVITY_FORCE
-        if self.rect.y < 220:
-            self.rect.y += GRAVITY_FORCE
-        if self.rect.y > 220:
-            self.rect.y -= GRAVITY_FORCE
-        if self.rect.x == 330 and self.rect.y == 220:
+        if self.rect.centerx > 350:
+            self.rect.centerx -= GRAVITY_FORCE
+        if self.rect.centerx < 350:
+            self.rect.centerx += GRAVITY_FORCE
+        if self.rect.centery < 250:
+            self.rect.centery += GRAVITY_FORCE
+        if self.rect.centery > 250:
+            self.rect.centery -= GRAVITY_FORCE
+        if self.rect.centerx == 300 and self.rect.centery >= 230:
             self.kill()
-        
-
+        if self.rect.centerx == 370 and self.rect.centery <= 330:
+            self.kill()
+        if self.rect.centerx == 300 and self.rect.centery <= 330:
+            self.kill()
+        if self.rect.centerx == 370 and self.rect.centery >= 230:
+            self.kill()
+        if self.rect.centerx >= 300 and self.rect.centery == 230:
+            self.kill()
+        if self.rect.centerx <= 370 and self.rect.centery == 330:
+            self.kill()
+        if self.rect.centerx >= 300 and self.rect.centery == 330:
+            self.kill()
+        if self.rect.centerx <= 370 and self.rect.centery == 230:
+            self.kill()
 class Hole(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('hole1.png')
+        self.images = []
+        self.index = 0
+        self.counter = 0
+        for num in range(1,4):
+            img = pygame.image.load(f'hole{num}.png')
+            self.images.append(img)
+        self.image = self.images[self.index]
         self.rect = self.image.get_rect()
-        self.rect.center = [x, y]
+        self.rect.center = [x,y]
         
+    def update(self):
+        if game_over == False:
+            self.counter += 1
+            cooldown = 5
+
+            if self.counter > cooldown:
+                self.counter = 0
+                self.index += 1
+                if self.index >= len(self.images):
+                    self.index = 0
+            self.image = self.images[self.index]
+
 
 class Sattelite(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('sattelite.png')
+        #self.image.fill((255,0,0))
         self.rect = self.image.get_rect()
         self.rect.center = [x,y]
         self.x_axis = 600
@@ -145,14 +177,14 @@ while run:
     draw_text(str(score),font,white,int(WIDTH/2),20)
 
     #collide_event
-    if pygame.sprite.spritecollide(voyager,meteorit_group,False,False):
+    if pygame.sprite.groupcollide(satel_group,meteorit_group,False,False):
         game_over = True
         button.draw()
 
     if game_over == False:
 
-        if score == 1000:
-            black_hole.image = pygame.image.load('hole2.png')
+        #if score == 1000:
+         #   black_hole.image = pygame.image.load('hole2.png')
 
         time_now = pygame.time.get_ticks()
 
