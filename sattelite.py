@@ -1,7 +1,7 @@
 import pygame
 game_over = False
-GRAVITY_FORCE = 5
-SPEED = 10
+GRAVITY_FORCE = 3
+SPEED = 7
 
 class Sattelite(pygame.sprite.Sprite):
     def __init__(self,x,y):

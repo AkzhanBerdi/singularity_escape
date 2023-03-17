@@ -37,7 +37,7 @@ font = pygame.font.SysFont('Bauhaus 93',60)
 white = (255,255,255)
 
 #game_variables
-meteor_frequency = 1500
+meteor_frequency = 2000
 last_meteor = pygame.time.get_ticks() - meteor_frequency
 game_over = False
 score = 0
@@ -72,10 +72,11 @@ while run:
     clock.tick(FPS)
     screen.blit(space_bg, (0,0))
     meteorit_group.draw(screen)
-    voyager.update()
-    satel_group.update()
-    satel_group.draw(screen)
+    if game_over == False:
+        voyager.update()
+        satel_group.update()
     hole_group.draw(screen)
+    satel_group.draw(screen)
     hole_group.update()
     screen.blit(voyager.image,(voyager.x,voyager.y))
 
@@ -89,8 +90,9 @@ while run:
             if satel_group.sprites()[0].rect.left != meteorit_group.sprites()[0].rect.right:
                 score += 1
                 evasion = False
-            if score in {500,1000,1500,2000,2500,3000,3500,4000,4500,5000}:
+            if score in {100,200,300,400,500,600,700,800,900,1000}:
                 sndPoint.play(0)
+                meteor_frequency -= 180
 
     draw_text(str(score),font,white,int(WIDTH/2),20)
 
@@ -123,6 +125,7 @@ while run:
         if button.draw() == True:
             game_over = False
             score = reset_game()
+            meteor_frequency = 2000
 
     # event handling
     for event in pygame.event.get():
